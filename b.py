@@ -1,62 +1,42 @@
+from heapq import heappush, heappop
 import sys
-from heapq import *
-sys.setrecursionlimit(10**9)
 
-sys.stdin = open("input.txt")
+sys.stdin = open('generated098.in')
 
-INF=sys.maxsize
-input=sys.stdin.readline
-def dijkstra(s):
-    ans=[INF]*n
-    ans[s]=0
-    Q=[]
-    heappush(Q,(0,s))
-    while Q:
-        a,b=heappop(Q)
-        if ans[b]<a:
-            continue
-        else:
-            for q in adj[b]:
-                w=adj[b][q]
-                if ans[q]>ans[b]+w:
-                    ans[q]=ans[b]+w
-                    heappush(Q,(ans[q],q))
-    return ans
-
-def tracking(ans,last):
-    global delete
-    temp=ans[last]
-    for i in where[last]:
-        if ans[i]>ans[last]:
-            continue
-        elif ans[i]+adj[i][last]==temp:
-            if (i,last) not in delete:
-                delete.add((i,last))
-                tracking(ans,i)
-
-while 1:
-    n,m=map(int,input().split())
-    if n==0 and m==0:
-        break
-    s,d=map(int,input().split())
-    adj=[{}for _ in range(n)]
-    where=[[]for _ in range(n)]
-
-    delete=set()
-
-    for i in range(m):
-        a,b,c=map(int,input().split())
-        adj[a][b]=c
-        where[b].append(a)
-    ans=dijkstra((s))
-
-    tracking(ans,d)
-
-    print(delete)
-    for a,b in delete:
-        del adj[a][b]
-    temp=dijkstra(s)[d]
-    if temp==INF:
-        print(-1)
-    else:
-        print(temp)
+input = sys.stdin.readline
+def distance(a, b, c, d):
+    return ((a - c) ** 2 + (b - d) ** 2) ** 0.5
+    
+def dijkstra(start):
+    heap = []
+    heappush(heap, [0, start])
+    dp = [100000000 for i in range(n + 2)]
+    dp[start] = 0
+    while heap:
+        w, nu = heappop(heap)
+        for ne, nw in s[nu]:
+            wei = nw + w
+            if dp[ne] > wei:
+                dp[ne] = wei
+                heappush(heap, [wei, ne])
+    return dp
+startX, startY = map(float, input().split())
+desX, desY = map(float, input().split())
+n = int(input())
+s = [[] for i in range(n + 2)]
+ca = [[startX, startY]]
+for i in range(1, n + 1):
+    x, y = map(float, input().split())
+    ca.append([x, y])
+    s[0].append([i, distance(x, y, startX, startY) / 5])
+ca.append([desX, desY])
+s[0].append([n + 1, distance(desX, desY, startX, startY) / 5])
+for i in range(1, n + 1):
+    cx, cy = ca[i][0], ca[i][1]
+    for j in range(n + 2):
+        x, y = ca[j][0], ca[j][1]
+        if i != j:
+            s[i].append([j, 2 + (abs(distance(x, y, cx, cy) - 50) / 5)])
+dp = dijkstra(0)
+print(dp)
+print(dp[n + 1])
