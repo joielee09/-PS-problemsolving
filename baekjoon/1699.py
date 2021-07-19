@@ -1,7 +1,7 @@
 import sys
 import math
 
-#sys.stdin=open('input.txt')
+sys.stdin=open('input.txt')
 
 N=int(sys.stdin.readline())
 mm=[math.inf]*int(N+2) #최소 math.inf
